@@ -1,4 +1,4 @@
-require('dotenv').config();
+import 'dotenv/config';
 import { TypeOrmModule } from "@nestjs/typeorm/dist/typeorm.module";
 
 export const typeOrmConfig: TypeOrmModule = {
