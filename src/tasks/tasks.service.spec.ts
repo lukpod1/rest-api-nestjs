@@ -83,7 +83,7 @@ describe('TasksService', () => {
         it('calls taskRepository.deleteTask() to delete a task', async () => {
             taskRepository.delete.mockResolvedValue({ affected: 1 });
             expect(taskRepository.delete).not.toHaveBeenCalled();
-            
+
             await tasksService.deleteTask(1, mockUser);
             expect(taskRepository.delete).toHaveBeenCalledWith({ id: 1, userId: mockUser.id });
         });
@@ -91,6 +91,26 @@ describe('TasksService', () => {
         it('throws an error as task could not be found', () => {
             taskRepository.delete.mockResolvedValue({ affected: 0 });
             expect(tasksService.deleteTask(1, mockUser)).rejects.toThrow(NotFoundException);
+        });
+    });
+
+    describe('updateTaskStatus', () => {
+        it('updates a task status', async () => {
+            const save = jest.fn().mockResolvedValue(true);
+
+            tasksService.getTaskById = jest.fn().mockResolvedValue({
+                status: Status.OPEN,
+                save,
+            });
+
+            expect(tasksService.getTaskById).not.toHaveBeenCalled();
+            expect(save).not.toHaveBeenCalled();
+
+            const result = await tasksService.updateTaskStatus(1, Status.DONE, mockUser);
+            
+            expect(tasksService.getTaskById).toHaveBeenCalled();
+            expect(save).toHaveBeenCalled();
+            expect(result.status).toEqual(Status.DONE);
         });
     });
 
